@@ -77,8 +77,6 @@ void drawFrame5(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int1
 
 }
 
-// This array keeps function pointers to all frames
-// frames are the single views that slide in
 FrameCallback frames[] = { drawFrame1, drawFrame2, drawFrame3, drawFrame4, drawFrame5 };
 
 // how many frames are there?
@@ -88,22 +86,19 @@ int frameCount = 5;
 OverlayCallback overlays[] = { msOverlay };
 int overlaysCount = 1;
 
-void setup() {
-  pinMode(16,OUTPUT);
-  digitalWrite(16, LOW);    // set GPIO16 low to reset OLED
-  delay(50); 
-  digitalWrite(16, HIGH); // while OLED is running, must set GPIO16 in high
-  
-  Serial.begin(115200);
-  Serial.println();
-  Serial.println();
 
-	// The ESP is capable of rendering 60fps in 80Mhz mode
-	// but that won't give you much time for anything else
-	// run it in 160Mhz mode or just set it to 30 fps
+void OLED_setup() {
+  pinMode(OLED_RST,OUTPUT);
+  digitalWrite(OLED_RST, LOW);    // set GPIO16 low to reset OLED
+  delay(50); 
+  digitalWrite(OLED_RST, HIGH); // while OLED is running, must set GPIO16 in high
+
+  // The ESP is capable of rendering 60fps in 80Mhz mode
+  // but that won't give you much time for anything else
+  // run it in 160Mhz mode or just set it to 30 fps
   ui.setTargetFPS(60);
 
-	// Customize the active and inactive symbol
+  // Customize the active and inactive symbol
   ui.setActiveSymbol(activeSymbol);
   ui.setInactiveSymbol(inactiveSymbol);
 
@@ -129,16 +124,4 @@ void setup() {
 
   display.flipScreenVertically();
 
-}
-
-
-void loop() {
-  int remainingTimeBudget = ui.update();
-
-  if (remainingTimeBudget > 0) {
-    // You can do some work here
-    // Don't do stuff if you are below your
-    // time budget.
-    delay(remainingTimeBudget);
-  }
 }
