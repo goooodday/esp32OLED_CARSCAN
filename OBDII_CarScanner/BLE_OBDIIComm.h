@@ -2,7 +2,7 @@
    Based on Neil Kolban example for IDF: https://github.com/nkolban/esp32-snippets/blob/master/cpp_utils/tests/BLE%20Tests/SampleScan.cpp
    Ported to Arduino ESP32 by Evandro Copercini
 */
-
+#include <sstream>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEScan.h>
@@ -11,15 +11,17 @@
 int scanTime = 5; //In seconds
 BLEScan* pBLEScan;
 
+
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
+    std::stringstream ss;
     void onResult(BLEAdvertisedDevice advertisedDevice) {
-      Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
+      //Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
+      ss << "-" << advertisedDevice.getName().c_str() << "#" << advertisedDevice.getAddress().toString().c_str() <<"\n";
+      Serial.printf(ss.str().c_str());
     }
 };
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Scanning...");
+void BLE_setup() {
 
   BLEDevice::init("");
   pBLEScan = BLEDevice::getScan(); //create new scan
@@ -29,7 +31,7 @@ void setup() {
   pBLEScan->setWindow(99);  // less or equal setInterval value
 }
 
-void loop() {
+void BLE_Scan() {
   // put your main code here, to run repeatedly:
   BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
   Serial.print("Devices found: ");
